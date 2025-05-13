@@ -13,8 +13,8 @@ double output = 0;
 double setpoint = 0;
 double kp = 6, ki = 0.2, kd = 1;
 
-int sensor_pins[5] = {23, 25, 27, 29, 31}; // pinos
-float sensor_values[5] = {-pi / 5, -pi / 11, 0, -pi / 11, pi / 5}; // valores de peso agregados aos sensores
+int sensor_pins[5] = { 23, 25, 27, 29, 31 };                       // pinos
+float sensor_values[5] = { -pi / 3, -pi / 6, 0, pi / 6, pi / 3 };  // valores de peso agregados aos sensores
 
 PID speed_pid(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 
@@ -56,11 +56,30 @@ void loop() {
   speed_pid.Compute();
 
   const double alpha = cos(output);
-  
+
   // direção de motor dependendo do alpha
 
-  left_spd -= -min(output, 0) * alpha * max_spd;
-  right_spd -= max(output, 0) * alpha * max_spd;
+  right_spd -= -min(output, 0) * alpha * max_spd;
+  left_spd -= max(output, 0) * alpha * max_spd;
+
+  if (fabs(output) > (pi / 2)) {
+    if (max(output, 0)) {
+      digitalWrite(left_mtr_forward, LOW);
+      digitalWrite(right_mtr_forward, HIGH);
+      digitalWrite(left_mtr_back, HIGH);
+      digitalWrite(right_mtr_back, LOW);
+    } else {
+      digitalWrite(left_mtr_forward, HIGH);
+      digitalWrite(right_mtr_forward, LOW);
+      digitalWrite(left_mtr_back, LOW);
+      digitalWrite(right_mtr_back, HIGH);
+    }
+  } else {
+      digitalWrite(left_mtr_forward, LOW);
+      digitalWrite(right_mtr_forward, LOW);
+      digitalWrite(left_mtr_back, HIGH);
+      digitalWrite(right_mtr_back, HIGH);
+  }
 
   // atualizar velocidade
   analogWrite(left_spd_pin, left_spd);
