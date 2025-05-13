@@ -7,15 +7,14 @@
 #define left_mtr_back 35
 #define right_mtr_forward 37
 #define right_mtr_back 39
-
+const double pi = 3.14159;
 double input = 0;
 double output = 0;
 double setpoint = 0;
 double kp = 6, ki = 0.2, kd = 1;
-double reduction_rate = 45;
 
 int sensor_pins[5] = {23, 25, 27, 29, 31}; // pinos
-float sensor_values[5] = {-4, -2, 0, 2, 4}; // valores de peso agregados aos sensores
+float sensor_values[5] = {-pi / 5, -pi / 11, 0, -pi / 11, pi / 5}; // valores de peso agregados aos sensores
 
 PID speed_pid(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 
@@ -43,7 +42,7 @@ void setup() {
 }
 
 void loop() {
-  double max_spd = 255;
+  const double max_spd = 255;
   double left_spd = max_spd;
   double right_spd = max_spd;
   input = 0;
@@ -52,17 +51,16 @@ void loop() {
   for (int i = 0; i <= 4; i++) {
     int s_input = invert(digitalRead(sensor_pins[i]));
     input += s_input * sensor_values[i];
-    // Serial.println(i);
-    // Serial.print(sensor_pins[i]);
-    // Serial.println(i);
-    // Serial.print(sensor_values[i]);
-    // Serial.println(i);
   }
 
   speed_pid.Compute();
 
-  right_spd -= max(0, min(fabs(min(0, output)) * reduction_rate, max_spd));
-  left_spd -= max(0, min(fabs(max(0, output)) * reduction_rate, max_spd));
+  const double alpha = cos(output);
+  
+  // direção de motor dependendo do alpha
+
+  left_spd -= -min(output, 0) * alpha * max_spd;
+  right_spd -= max(output, 0) * alpha * max_spd;
 
   // atualizar velocidade
   analogWrite(left_spd_pin, left_spd);
