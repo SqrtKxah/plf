@@ -14,7 +14,7 @@ double setpoint = 0;
 double kp = 6, ki = 0.2, kd = 1;
 
 int sensor_pins[5] = { 23, 25, 27, 29, 31 };                       // pinos
-float sensor_values[5] = { -pi / 3, -pi / 6, 0, pi / 6, pi / 3 };  // valores de peso agregados aos sensores
+float sensor_values[5] = { -pi / 2, -pi / 5, 0, pi / 5, pi / 2 };  // valores de peso agregados aos sensores
 
 PID speed_pid(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 
@@ -59,8 +59,8 @@ void loop() {
 
   // direção de motor dependendo do alpha
 
-  right_spd -= -min(output, 0) * alpha * max_spd;
-  left_spd -= max(output, 0) * alpha * max_spd;
+  right_spd -= min(-min(output, 0), 1) * alpha * max_spd;
+  left_spd -= min(max(output, 0), 1) * alpha * max_spd;
 
   if (fabs(output) > (pi / 2)) {
     if (max(output, 0)) {
