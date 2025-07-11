@@ -1,3 +1,4 @@
+#include <Adafruit_TCS34725.h>
 #include <math.h>
 
 #define left_spd_pin 3
@@ -17,6 +18,11 @@ const double max_turn_spd = 155;
 
 int sensor_pins[4] = { 22, 23, 25, 19};                  // pinos
 float sensor_values[4] = { -2, -1, 1, 2 };  // valores de peso agregados aos sensores
+
+bool is_within_range(double desired, double value, double minimum, double maximum) {
+  double dist = value - desired;
+  return (dist >= minimum) && (dist <= maximum);
+}
 
 void setup() {
   pinMode(20, OUTPUT);
