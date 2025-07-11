@@ -11,13 +11,13 @@ const double pi = 3.14159;
 double input = 0;
 double output = 0;
 double setpoint = 0;
-double kp = 3, ki = 0.03, kd = 1;
+double kp = 4, ki = 0.0, kd = .0;
 const double sensor_threshold = 900;
 
-const double max_spd = 200;
+const double max_spd = 255;
 
 int sensor_pins[4] = { 22, 23, 25, 19};                       // pinos
-float sensor_values[4] = { -pi / 2, -pi / 5, pi / 5, pi/2 };  // valores de peso agregados aos sensores
+float sensor_values[4] = { -pi / 3, -pi / 4, pi / 4, pi / 3 };  // valores de peso agregados aos sensores
 
 ArduPID speed_pid;
 
@@ -44,8 +44,8 @@ void setup() {
   digitalWrite(left_mtr_back, HIGH);
   digitalWrite(right_mtr_back, HIGH);
   speed_pid.begin(&input, &output, &setpoint, kp, ki, kd);
-  speed_pid.setOutputLimits(-pi / 1.5, pi / 1.5);
-  speed_pid.setSampleTime(5);
+  speed_pid.setOutputLimits(-pi, pi);
+  speed_pid.setSampleTime(1);
   speed_pid.start();
 }
 
@@ -96,17 +96,20 @@ void loop() {
       digitalWrite(right_mtr_forward, HIGH);
       digitalWrite(left_mtr_back, HIGH);
       digitalWrite(right_mtr_back, LOW);
+      // Serial.println("HARD RIGHT");
     } else {
       digitalWrite(left_mtr_forward, HIGH);
       digitalWrite(right_mtr_forward, LOW);
       digitalWrite(left_mtr_back, LOW);
       digitalWrite(right_mtr_back, HIGH);
+      // Serial.println("HARD LEFT");
     }
   } else {
       digitalWrite(left_mtr_forward, LOW);
       digitalWrite(right_mtr_forward, LOW);
       digitalWrite(left_mtr_back, HIGH);
       digitalWrite(right_mtr_back, HIGH);
+      // Serial.println("HARD FORWARD");
   }
 
   // atualizar velocidade
@@ -114,6 +117,6 @@ void loop() {
   analogWrite(right_spd_pin, right_spd);
 
   // Serial.println(output);
-  Serial.println(String("Entrada" + String(input, DEC)));
-  Serial.println(String("Saida" + String(output, DEC)));
+  // Serial.println(String("Entrada" + String(input, DEC)));
+  // Serial.println(String("Saida" + String(output, DEC)));
 }
